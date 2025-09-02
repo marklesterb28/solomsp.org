@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SoloMSP — Remote IT, Done Right</title>
+  <meta name="description" content="SoloMSP — affordable, secure, and no‑nonsense remote IT services for SMBs." />
+  <meta name="theme-color" content="#18ff6d" />
+  <style>
+    :root{
+      --bg:#050505;           /* near-black */
+      --bg-alt:#0b0b0b;       /* dark grey */
+      --grid:#0f0f0f;         /* panel lines */
+      --txt:#c8f7d8;          /* soft mint text */
+      --muted:#8dd7b0;        /* muted mint */
+      --neon:#39ff14;         /* neon green */
+      --aqua:#00ffc6;         /* accent */
+      --red:#ff3b81;          /* warning accent */
+    }
+    /* Global */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 800px at 75% -10%,rgba(0,255,102,0.12),transparent 60%),
+               radial-gradient(900px 600px at 10% 120%,rgba(0,255,198,0.12),transparent 60%),
+               var(--bg);
+      color:var(--txt); font:16px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      letter-spacing:.2px; overflow-x:hidden;
+    }
+    a{color:var(--aqua); text-decoration:none}
+    a:hover{text-decoration:underline}
+    /* Matrix rain background */
+    #matrix{
+      position:fixed; inset:0; z-index:-1; opacity:.14; filter:contrast(110%);
+    }
+    @media (prefers-reduced-motion: reduce){ #matrix{ display:none } }
+
+    /* Grid overlay */
+    .grid{position:fixed; inset:0; background-size: 40px 40px, 40px 40px; z-index:-2;
+      background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px),
+                        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      mask-image: radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,.65), rgba(0,0,0,0) 70%);
+    }
+
+    /* Container */
+    .wrap{max-width:1100px; margin:0 auto; padding:24px}
+
+    /* Top bar */
+    .top{display:flex; align-items:center; gap:14px; justify-content:space-between; padding:12px 0}
+    .brand{display:flex; align-items:center; gap:12px; text-transform:uppercase; letter-spacing:2px}
+    .dot{width:12px; height:12px; border-radius:999px; background:var(--neon); box-shadow:0 0 18px var(--neon)}
+    .brand b{font-weight:800; color:var(--neon); text-shadow:0 0 10px rgba(57,255,20,.35)}
+    nav{display:flex; gap:18px; flex-wrap:wrap}
+    nav a{opacity:.9}
+
+    /* Hero */
+    .hero{display:grid; grid-template-columns: 1.2fr 1fr; gap:28px; align-items:center; padding:40px 0}
+    .card{background:linear-gradient(180deg, rgba(24,255,109,.07), rgba(0,0,0,0)); border:1px solid rgba(24,255,109,.25);
+          border-radius:18px; padding:26px; box-shadow:0 0 0 1px rgba(0,0,0,.3) inset, 0 20px 60px rgba(0,0,0,.35)}
+    .hero h1{font-size:42px; line-height:1.15; margin:0 0 10px}
+    .sub{color:var(--muted)}
+    .badges{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0}
+    .badge{border:1px solid rgba(0,255,198,.3); color:#bff8ee; padding:6px 10px; border-radius:999px; font-size:12px; background:rgba(0,255,198,.06)}
+    .cta{display:flex; gap:12px; margin-top:14px; flex-wrap:wrap}
+    .btn{padding:12px 16px; border-radius:12px; border:1px solid rgba(57,255,20,.45); background:linear-gradient(180deg, rgba(57,255,20,.18), rgba(0,0,0,0));
+         color:var(--txt); font-weight:700; text-transform:uppercase; letter-spacing:1px}
+    .btn:hover{filter:brightness(1.08)}
+    .btn.alt{border-color:rgba(0,255,198,.45); background:linear-gradient(180deg, rgba(0,255,198,.16), rgba(0,0,0,0));}
+
+    /* Terminal panel */
+    .term{background:var(--bg-alt); border:1px solid rgba(255,255,255,.07); border-radius:14px; overflow:hidden}
+    .term-head{display:flex; gap:8px; align-items:center; padding:10px 12px; background:#0a0a0a; border-bottom:1px solid rgba(255,255,255,.06)}
+    .lights{display:flex; gap:8px}
+    .light{width:10px;height:10px;border-radius:999px;background:#373737}
+    .light.r{background:#ff5f56}
+    .light.y{background:#ffbd2e}
+    .light.g{background:#27c93f}
+    .term-body{padding:16px; min-height:240px; color:#e5ffe9}
+    .prompt{color:#74ff9a}
+    .caret{display:inline-block; width:10px; height:1.1em; background:var(--neon); vertical-align:-3px; animation:blink 1.2s steps(1,end) infinite}
+    @keyframes blink{50%{opacity:0}}
+
+    /* Sections */
+    section{padding:32px 0}
+    .tiles{display:grid; grid-template-columns: repeat(3,1fr); gap:16px}
+    .tile{background:linear-gradient(180deg, rgba(24,255,109,.05), rgba(0,0,0,0)); border:1px solid rgba(24,255,109,.18); border-radius:14px; padding:18px}
+    .tile h3{margin:0 0 6px; color:var(--neon)}
+
+    /* Footer */
+    footer{padding:28px 0 40px; color:#9adfb8; opacity:.9}
+    .foot{display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between}
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+    }
+    @media (max-width: 720px){
+      .tiles{grid-template-columns:1fr}
+      .hero h1{font-size:32px}
+    }
+  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='black'/%3E%3Cpath d='M10 33 L26 17 M10 31 L26 47' stroke='%2339ff14' stroke-width='4' stroke-linecap='round'/%3E%3Crect x='34' y='17' width='20' height='30' rx='4' fill='none' stroke='%2300ffc6' stroke-width='4'/%3E%3C/svg%3E" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "SoloMSP",
+    "url": "https://solomsp.org",
+    "description": "Affordable, secure remote IT services for SMBs (US/UK/AU/NZ)",
+    "email": "support@solomsp.org",
+    "areaServed": ["US","UK","AU","NZ"],
+    "sameAs": []
+  }
+  </script>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand"><span class="dot" aria-hidden="true"></span><b>SoloMSP</b><span style="opacity:.7">// remote it</span></div>
+      <nav>
+        <a href="#services">Services</a>
+        <a href="#why">Why SoloMSP</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <h1>Affordable, secure <span style="color:var(--neon)">remote IT</span> for SMBs.</h1>
+        <p class="sub">Pay only for what you need. Transparent hourly pricing. No lock‑in. Built on battle‑tested, open‑source tools.</p>
+        <div class="badges">
+          <span class="badge">24/7 Monitoring</span>
+          <span class="badge">Patch &amp; Updates</span>
+          <span class="badge">Helpdesk &amp; Remote Support</span>
+          <span class="badge">Backups &amp; Recovery</span>
+          <span class="badge">Documentation (KB)</span>
+        </div>
+        <div class="cta">
+          <a class="btn" href="#contact">Get Support</a>
+          <a class="btn alt" href="mailto:support@solomsp.org">Email: support@solomsp.org</a>
+        </div>
+      </div>
+
+      <div class="term" role="region" aria-label="Demo terminal">
+        <div class="term-head">
+          <div class="lights"><span class="light r"></span><span class="light y"></span><span class="light g"></span></div>
+          <div style="margin-left:8px; color:#9adfb8; opacity:.8">/bin/solomsp — status</div>
+        </div>
+        <div class="term-body" id="terminal">
+          <div class="line"><span class="prompt">mark@client</span>:~$ npx solomsp audit</div>
+          <div class="line">▶ scanning endpoints... <span style="color:var(--aqua)">ok</span></div>
+          <div class="line">▶ patch baseline........ <span style="color:var(--aqua)">compliant</span></div>
+          <div class="line">▶ backups................ <span style="color:var(--aqua)">verified</span></div>
+          <div class="line">▶ security controls...... <span style="color:var(--aqua)">hardened</span></div>
+          <div class="line"><span class="prompt">mark@client</span>:~$ <span class="caret" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <h2 style="margin:0 0 12px; color:var(--neon)">Services</h2>
+      <div class="tiles">
+        <article class="tile"><h3>Helpdesk</h3><p>Responsive, ticket‑based support. Clear SLAs. Remote fixes first.</p></article>
+        <article class="tile"><h3>Monitoring</h3><p>Endpoint, server, and service health with actionable alerts.</p></article>
+        <article class="tile"><h3>Patch Mgmt</h3><p>OS &amp; app updates, maintenance windows, and rollback plans.</p></article>
+        <article class="tile"><h3>Backups</h3><p>3‑2‑1 strategy, encrypted, tested restores. Your data, your rules.</p></article>
+        <article class="tile"><h3>Security</h3><p>Hardening, MFA, least‑privilege, and incident response basics.</p></article>
+        <article class="tile"><h3>Documentation</h3><p>Client‑owned KB and runbooks so nothing lives only in email.</p></article>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2 style="margin:0 0 12px; color:var(--neon)">Why SoloMSP</h2>
+      <div class="tiles">
+        <article class="tile"><h3>No Lock‑In</h3><p>Month‑to‑month. Leave anytime with your data &amp; docs intact.</p></article>
+        <article class="tile"><h3>Open‑Source First</h3><p>Lower cost, transparent tooling, vendor‑agnostic choices.</p></article>
+        <article class="tile"><h3>Plain English</h3><p>Clear pricing, clear communication, and clear next steps.</p></article>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 style="margin:0 0 12px; color:var(--neon)">Contact</h2>
+      <div class="card" style="display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap">
+        <div>
+          <div style="opacity:.9">Email</div>
+          <div style="font-weight:700">support@solomsp.org</div>
+        </div>
+        <a class="btn" href="mailto:support@solomsp.org">Open Mail</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="foot">
+        <div>© <span id="y"></span> SoloMSP • Built with love and shell scripts.</div>
+        <div style="opacity:.8">Press <kbd>T</kbd> to toggle matrix</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear()
+
+    // Matrix rain
+    const cvs = document.getElementById('matrix');
+    const ctx = cvs.getContext('2d');
+    let cols, ypos, rafId, on = true
+    function resize(){
+      cvs.width = innerWidth; cvs.height = innerHeight; cols = Math.floor(cvs.width/14); ypos = Array(cols).fill(0)
+    }
+    addEventListener('resize', resize); resize()
+    function matrix(){
+      if(!on) return
+      ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fillRect(0,0,cvs.width,cvs.height)
+      ctx.fillStyle = '#39ff14'; ctx.font = '14px monospace'
+      ypos.forEach((y, i)=>{
+        const text = String.fromCharCode(0x30A0 + Math.random()*96)
+        const x = i * 14
+        ctx.fillText(text, x, y)
+        if(y > 100 + Math.random()*10000) ypos[i] = 0
+        else ypos[i] = y + 14
+      })
+      rafId = requestAnimationFrame(matrix)
+    }
+    matrix()
+
+    // Toggle with T
+    addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase() === 't'){
+        on = !on
+        if(on) matrix(); else cancelAnimationFrame(rafId)
+        cvs.style.opacity = on ? '.14' : '0'
+      }
+    })
+  </script>
+</body>
+</html>
